@@ -1,0 +1,57 @@
+// PixelBlaze mapper for Multiple Panel Matrix display
+// When using two stnndard 16x16 NeoPixels side-by-side.
+// Displays zigzag & need to be rotated & flipped
+// By John Gallaugher. github.com/gallaugher/pixel-blaze-mappers
+
+function (pixelCount) {
+  //set zigzag to true if every other LED row travels in reverse
+  //if they are all straight across, set it to false
+  zigzag = true
+  
+  //rotate a point (x, y), along a center (cx, cy), by an angle in degrees
+  function rotate(cx, cy, x, y, angle) {
+    var radians = (Math.PI / 180) * angle,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    return [nx, ny];
+  }
+
+  //create a set of coordinates for a matrix panel
+  //sized (w, h), rotated by an angle, and offset by (sx, sy)
+  function panel(w, h, sx, sy, angle) {
+    var x, x2, y, p, map = []
+    for (y = 0; y < h; y++) {
+      for (x = 0; x < w; x++) {
+        //for zigzag, flip direction every other row
+        if (zigzag && y % 2 == 1)
+          x2 = w - 1 - x
+        else
+          x2 = x
+        p = rotate((w-1)/2, (h-1)/2, x2, y, angle);
+        p[0] += sx
+        p[1] += sy
+        map.push(p)
+      }
+    }
+    return map;
+  }
+
+  //assemble one or more panels
+  var map = [];
+
+// side by side - so 32 x 16 with panels rotated 90° to the left
+  var map = [];
+
+
+  map = map.concat(panel(16, 16, 16, 0, 270));  
+  map = map.concat(panel(16, 16, 0,  0, 270));
+  
+  var TOTAL_WIDTH = 32;   // 
+  for (var i = 0; i < map.length; i++) {
+    map[i][0] = (TOTAL_WIDTH - 1) - map[i][0]; // mirror X
+  }
+
+  return map
+}

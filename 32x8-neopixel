@@ -1,0 +1,41 @@
+// PixelBlaze Mapper code for standard 16x16 NeoPixel matrix
+// Assumes panel is oriented 32 pixels wide by 8 high.
+// Code by John Gallaugher. Contact for changes: github.com/gallaugher
+function (pixelCount) {
+  width = 8    // width of LED panel
+  angle = 90   // rotation in degrees: 0, 90, 180, 270
+  flip = true   // does the rendering need to be flipped?
+  
+  height = width/pixelCount
+  
+  map = []
+  for (i = 0; i < pixelCount; i++) {
+    y = Math.floor(i / width)
+    x = i % width
+    x = y % 2 == 1 ? width - 1 - x : x //zigzag
+    map.push([x, y])
+  }
+  
+  if (flip) {
+    for (i = 0; i < map.length; i++) {
+      map[i][0] = (width - 1) - map[i][0]; // mirror X
+    }
+  }
+
+    // helper: apply 90°-step rotation
+  function rotate90(x, y, angle) {
+    if (angle === 90)   return [y,        width - 1 - x]
+    if (angle === 180)  return [width - 1 - x, height - 1 - y]
+    if (angle === 270)  return [height - 1 - y, x]
+    return [x, y] // 0° or default
+  }
+
+  // apply rotation of angle
+  for (i = 0; i < map.length; i++) {
+    p = rotate90(map[i][0], map[i][1], angle)
+    map[i][0] = p[0]
+    map[i][1] = p[1]
+  }
+  
+  return map
+}

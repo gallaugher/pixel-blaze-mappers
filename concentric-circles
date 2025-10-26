@@ -82,7 +82,7 @@ function (pixelCount) {
 
     for (let i = 0; i < n; i++) {
       const theta = ringStart + dir * (i * step);
-      const x = centerX + scale * (radius * Math.cos(theta));
+      const x = centerX - scale * (radius * Math.cos(theta));
       const y = centerY + scale * (radius * Math.sin(theta));
       map.push([x, y]);
     }

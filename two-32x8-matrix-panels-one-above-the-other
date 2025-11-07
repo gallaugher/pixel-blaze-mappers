@@ -1,0 +1,57 @@
+// PixelBlaze mapper for Two 32x8 NeoPixel matrices stacked vertically
+// Bottom panel is flipped 180° for data connection
+// By John Gallaugher. github.com/gallaugher/pixel-blaze-mappers
+// Orient like this:
+// Panel 1: +------------------------+
+//          |  DOUT             DIN  |
+//          +------------------------+
+// Panel 2: +------------------------+
+//          |  DIN             DOUT  |
+//          +------------------------+
+function (pixelCount) {
+  zigzag = true
+  
+  //rotate a point (x, y), along a center (cx, cy), by an angle in degrees
+  function rotate(cx, cy, x, y, angle) {
+    var radians = (Math.PI / 180) * angle,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    return [nx, ny];
+  }
+  
+  //create a set of coordinates for a matrix panel
+  //sized (w, h), rotated by an angle, and offset by (sx, sy)
+  function panel(w, h, sx, sy, angle) {
+    var x, x2, y, p, map = []
+    for (y = 0; y < h; y++) {
+      for (x = 0; x < w; x++) {
+        //for zigzag, flip direction every other row
+        if (zigzag && y % 2 == 1)
+          x2 = w - 1 - x
+        else
+          x2 = x
+        p = rotate((w-1)/2, (h-1)/2, x2, y, angle);
+        p[0] += sx
+        p[1] += sy
+        map.push(p)
+      }
+    }
+    return map;
+  }
+  
+  var map = [];
+  // Top panel: 32x8, rotated 90° to match your single panel setup
+  map = map.concat(panel(8, 32, 0, 0, 90));  
+  // Bottom panel: 32x8, at y=8, rotated 270° (90° + 180° flip)
+  map = map.concat(panel(8, 32, 0, 8, 270));
+  
+  // Apply the same flip that your single panel mapper uses
+  var TOTAL_WIDTH = 16;  // After rotation, width becomes height of original
+  for (var i = 0; i < map.length; i++) {
+    map[i][0] = (TOTAL_WIDTH - 1) - map[i][0]; // mirror X
+  }
+  
+  return map
+}

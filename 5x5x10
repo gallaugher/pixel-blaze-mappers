@@ -1,0 +1,20 @@
+# Assumes 5x5 cube, lights start at bottom & move up.
+# row starts lower right.
+# Rows always loop back left to right, bottom to top, not serpentine
+function (pixelCount) {
+  var strandsX = 5      // strands in X direction
+  var strandsY = 5      // strands in Y direction
+  var height = 10       // pixels per strand (Z direction)
+  
+  var map = []
+  for (var i = 0; i < pixelCount; i++) {
+    var strand = Math.floor(i / height)
+    var z = i % height
+    
+    var y = Math.floor(strand / strandsX)
+    var x = strand % strandsX
+    
+    map.push([x, y, z])
+  }
+  return map
+}

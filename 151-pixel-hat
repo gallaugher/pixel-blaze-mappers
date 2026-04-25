@@ -1,0 +1,28 @@
+// PixelBlaze mapper for 4-row hat matrix
+// 151 LEDs total: rows of 37, 38, 38, 38
+// Center pixel in each row maps to front-center (x = 0.5)
+// By John Gallaugher. github.com/gallaugher/pixel-blaze-mappers
+function (pixelCount) {
+  
+  var rows = [
+    { count: 37, center: 21 },  // top row
+    { count: 38, center: 20 },
+    { count: 38, center: 20 },
+    { count: 38, center: 20 },  // bottom row
+  ];
+
+  var numRows = rows.length;
+  var map = [];
+
+  for (var r = 0; r < numRows; r++) {
+    var row = rows[r];
+    for (var i = 0; i < row.count; i++) {
+      var offset = i - row.center;       // distance from front-center
+      var x = 0.5 + offset / row.count; // center = 0.5, wraps toward 0 & 1
+      var y = r / (numRows - 1);        // top row = 0, bottom row = 1
+      map.push([x, y]);
+    }
+  }
+
+  return map;
+}
